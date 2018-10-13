@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+
+##############################################
+## IMPORTS
+##############################################
+
+from os import path
+from pathlib import Path
+
+filename = Path(path.expanduser('~/.lastkeylightvalue'))
+currentname = '/sys/class/leds/asus::kbd_backlight/brightness'
+
+
+##############################################
+## DEFINITIONS
+##############################################
+
+def sanitycheck():
+    if not filename.is_file():
+        file = open(filename, 'w+')
+        file.close()
+
+def readfile():
+    file = open(filename, 'r')
+    filevalue = file.read()
+    file.close()
+    return filevalue
+
+def readcurrent():
+    current = open(currentname,'r')
+    currentvalue = current.read()
+    current.close
+    return currentvalue
+
+def workthemagic(filevalue,currentvalue):
+    if int(currentvalue) != 0:
+        filevalue = currentvalue
+        currentvalue = '0'
+    else:
+        currentvalue = filevalue
+        filevalue = '0'
+    return filevalue,currentvalue
+
+def filewrite(filevalue):
+    file = open(filename, 'w')
+    file.write(str(filevalue))
+    file.close()
+
+def currentwrite(currentvalue):
+    current = open(currentname, 'w')
+    current.write(str(currentvalue))
+    current.close()
+
+
+##############################################
+## MAIN FUNCTION
+##############################################
+
+def main():
+    sanitycheck()
+    filevalue = readfile()
+    currentvalue = readcurrent()
+    filevalue,currentvalue = workthemagic(filevalue,currentvalue)
+    filewrite(filevalue)
+    currentwrite(currentvalue)
+
+main()
